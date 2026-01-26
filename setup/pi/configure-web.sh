@@ -66,10 +66,10 @@ fi
 # install React UI at /react/ - alternative interface with real-time sync progress
 mkdir -p /var/www/html/react
 # build the dist folder
-_DIST_BUILD_PREVWD=$PWD
+DIST_NPMBUILD_PREVWD=$PWD
 cd $SOURCE_DIR/teslausb-www-react
 npm i && npm run build
-cd _DIST_BUILD_PREVWD
+cd $DIST_NPMBUILD_PREVWD
 # copy results
 cp -r "$SOURCE_DIR/teslausb-www-react/dist/"* /var/www/html/react/
 
