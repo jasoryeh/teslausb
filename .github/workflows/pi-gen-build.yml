@@ -16,5 +16,26 @@ jobs:
       - name: Docker Setup Docker
         uses: docker/setup-docker-action@v4.7.0
 
+      - name: Install pi-gen dependencies
+        run: |
+          sudo apt update && 
+          sudo apt -y install coreutils quilt parted qemu-user-static debootstrap zerofree zip dosfstools e2fsprogs libarchive-tools libcap2-bin grep rsync xz-utils file git curl bc gpg pigz xxd arch-test bmap-tools kmod
+
       - name: Run pi-gen auto.sh build script
         run: cd pi-gen-sources && bash ./auto.sh
+
+      # via https://github.com/RPi-Distro/pi-gen/pull/786
+      - name: Get Image Name
+        id: imagefile
+        run: |
+          cd pi-gen/deploy
+          ls
+          IMAGE_FILE=$(ls *.zip)
+          echo "imagefile=$IMAGE_FILE" >> $GITHUB_OUTPUT
+
+      # The image now exists in deploy/.
+      # Make the artifact available from the action.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.config.outputs.image }}
+          path: pi-gen-sources/pi-gen/deploy/${{ steps.imagefile.outputs.imagefile }}
