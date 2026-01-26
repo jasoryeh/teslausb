@@ -31,8 +31,10 @@ jobs:
           echo $PWD
           ls
           cd pi-gen-sources/pi-gen/deploy
+          echo $PWD
           ls
           IMAGE_FILE=$(ls *.zip)
+          echo "Found image file: $IMAGE_FILE"
           echo "imagefile=$IMAGE_FILE" >> $GITHUB_OUTPUT
 
       # The image now exists in deploy/.
