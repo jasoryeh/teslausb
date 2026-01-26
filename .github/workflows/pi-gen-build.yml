@@ -13,8 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Docker Setup Docker
-        uses: docker/setup-docker-action@v4.7.0
+#      - name: Docker Setup Docker
+#        uses: docker/setup-docker-action@v4.7.0
 
       - name: Install pi-gen dependencies
         run: |
