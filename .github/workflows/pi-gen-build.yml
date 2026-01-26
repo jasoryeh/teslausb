@@ -28,7 +28,9 @@ jobs:
       - name: Get Image Name
         id: imagefile
         run: |
-          cd pi-gen/deploy
+          echo $PWD
+          ls
+          cd pi-gen-sources/pi-gen/deploy
           ls
           IMAGE_FILE=$(ls *.zip)
           echo "imagefile=$IMAGE_FILE" >> $GITHUB_OUTPUT
