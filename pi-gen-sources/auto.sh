@@ -26,8 +26,8 @@ cd pi-gen
 bash $SRC/prepare.sh
 echo "Done preparing 'pi-gen', ready for build now."
 
-echo "Starting pi-gen docker build..."
-bash build-docker.sh
+echo "Starting pi-gen build..."
+bash build.sh
 echo ""
 echo "pi-gen/build-docker.sh complete!"
 echo ""
