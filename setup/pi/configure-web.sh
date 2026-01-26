@@ -13,7 +13,17 @@ mkdir -p /var/lib/nginx
 mount /var/log/nginx
 mount /var/lib/nginx
 
+# dependencies
 apt-get -y --force-yes install nginx fcgiwrap libnginx-mod-http-fancyindex fuse libfuse-dev g++ net-tools wireless-tools ethtool
+
+# additional dependencies: node/nvm/npm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+# - via nvm setup to activate nvm:
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# - install node 22
+nvm install 22 && nvm use 22
 
 # install data files and config files
 systemctl stop nginx.service &> /dev/null || true
@@ -55,6 +65,12 @@ fi
 
 # install React UI at /react/ - alternative interface with real-time sync progress
 mkdir -p /var/www/html/react
+# build the dist folder
+_DIST_BUILD_PREVWD=$PWD
+cd $SOURCE_DIR/teslausb-www-react
+npm i && npm run build
+cd _DIST_BUILD_PREVWD
+# copy results
 cp -r "$SOURCE_DIR/teslausb-www-react/dist/"* /var/www/html/react/
 
 cat > /sbin/mount.ctts << EOF
