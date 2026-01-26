@@ -2,7 +2,12 @@
 
 To build a ready to flash one-step setup image for CIFS, do the following:
 
-1. Clone pi-gen from https://github.com/RPi-Distro/pi-gen
+Automatic build steps:
+1. Run `auto.sh`, and wait for it to finish.
+    * Behind the scenes, it will do all of the below steps automatically.
+
+Manual build steps:
+1. Clone `pi-gen` from https://github.com/RPi-Distro/pi-gen
 2. Follow the instructions in the pi-gen readme to install the required dependencies
 3. From the RPi-Distro/pi-gen folder, run the `prepare.sh` script from TeslaUSB's pi-gen-sources folder
 4. If needed, adjust ROOT_MARGIN or ROOT_PART_SIZE in pi-gen/export-image/prerun.sh to ensure sufficient free space left on the root partition of the generated image
