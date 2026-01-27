@@ -5,6 +5,10 @@
 
 const DEFAULT_API_PATH = '/cgi-bin';
 
+/**
+ * Get the base domain for API requests, checks for alternative endpoints on the window for debugging.
+ * @returns {string}
+ */
 export function baseDomain() {
     return window.url.searchParams.get('endpoint') || window.TESLAUSB_API_BASE || DEFAULT_API_BASE || '';
 }
