@@ -11,6 +11,8 @@ server {
     client_max_body_size 0;
     fastcgi_request_buffering off;
 
+    add_header 'Access-Control-Allow-Origin' '*';
+
     location / {
         try_files $uri $uri/ =404;
         auth_basic off;
