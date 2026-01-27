@@ -14,7 +14,7 @@ export function FileBrowser({ config }) {
     if (!document.querySelector('link[href="/filebrowser.css"]')) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = '/filebrowser.css';
+      link.href = '/react/filebrowser.css';
       document.head.appendChild(link);
     }
   }, []);
@@ -27,7 +27,7 @@ export function FileBrowser({ config }) {
     }
 
     const script = document.createElement('script');
-    script.src = '/filebrowser.js';
+    script.src = '/react/filebrowser.js';
     script.onload = () => setScriptLoaded(true);
     script.onerror = () => console.error('Failed to load filebrowser.js');
     document.head.appendChild(script);
