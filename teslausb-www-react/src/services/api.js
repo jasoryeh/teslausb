@@ -1,16 +1,24 @@
 /**
- * TeslaUSB API Service
+ * TeslaUSB API Client
  * Handles all communication with the backend CGI scripts
  */
 
-const API_BASE = '/cgi-bin';
+const DEFAULT_API_BASE = '/cgi-bin';
+
+/**
+ * Get the base URL for API requests, checks for alternative endpoints on the window for debugging.
+ * @returns {string}
+ */
+export function baseURL() {
+    return window.url.searchParams.get('endpoint') || window.TESLAUSB_API_BASE || DEFAULT_API_BASE;
+}
 
 /**
  * Fetch system status
  * @returns {Promise<Object>} Status object with cpu_temp, disk space, wifi, etc.
  */
 export async function fetchStatus() {
-  const response = await fetch(`${API_BASE}/status.sh`);
+  const response = await fetch(`${baseURL()}/status.sh`);
   if (!response.ok) throw new Error('Failed to fetch status');
   return response.json();
 }
@@ -20,7 +28,7 @@ export async function fetchStatus() {
  * @returns {Promise<Object>} Config object with has_cam, has_music, etc.
  */
 export async function fetchConfig() {
-  const response = await fetch(`${API_BASE}/config.sh`);
+  const response = await fetch(`${baseURL()}/config.sh`);
   if (!response.ok) throw new Error('Failed to fetch config');
   return response.json();
 }
@@ -30,7 +38,7 @@ export async function fetchConfig() {
  * @returns {Promise<Object>} Storage object with cam, music, lightshow, boombox, total
  */
 export async function fetchStorage() {
-  const response = await fetch(`${API_BASE}/storage.sh`);
+  const response = await fetch(`${baseURL()}/storage.sh`);
   if (!response.ok) throw new Error('Failed to fetch storage');
   return response.json();
 }
@@ -46,7 +54,7 @@ export async function listDirectory(rootPath, dirPath = '') {
   params.append('root', rootPath);
   if (dirPath) params.append('path', dirPath);
 
-  const response = await fetch(`${API_BASE}/ls.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(dirPath)}`);
+  const response = await fetch(`${baseURL()}/ls.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(dirPath)}`);
   if (!response.ok) throw new Error('Failed to list directory');
 
   const text = await response.text();
@@ -99,7 +107,7 @@ function parseDirectoryListing(text) {
 export async function uploadFile(rootPath, destPath, file, onProgress) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', `${API_BASE}/upload.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(destPath)}`);
+    xhr.open('POST', `${baseURL()}/upload.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(destPath)}`);
     xhr.setRequestHeader('Content-Type', 'application/octet-stream');
 
     xhr.upload.onprogress = (e) => {
@@ -128,7 +136,7 @@ export async function uploadFile(rootPath, destPath, file, onProgress) {
  * @returns {string} Download URL
  */
 export function getDownloadUrl(rootPath, filePath) {
-  return `${API_BASE}/download.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(filePath)}`;
+  return `${baseURL()}/download.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(filePath)}`;
 }
 
 /**
@@ -139,7 +147,7 @@ export function getDownloadUrl(rootPath, filePath) {
  */
 export function getZipDownloadUrl(rootPath, paths) {
   const params = [encodeURIComponent(rootPath), ...paths.map(p => encodeURIComponent(p))].join('&');
-  return `${API_BASE}/downloadzip.sh?${params}`;
+  return `${baseURL()}/downloadzip.sh?${params}`;
 }
 
 /**
@@ -149,7 +157,7 @@ export function getZipDownloadUrl(rootPath, paths) {
  * @returns {Promise<void>}
  */
 export async function createDirectory(rootPath, dirName) {
-  const response = await fetch(`${API_BASE}/mkdir.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(dirName)}`);
+  const response = await fetch(`${baseURL()}/mkdir.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(dirName)}`);
   if (!response.ok) throw new Error('Failed to create directory');
 }
 
@@ -161,7 +169,7 @@ export async function createDirectory(rootPath, dirName) {
  * @returns {Promise<void>}
  */
 export async function moveItem(rootPath, currentPath, newName) {
-  const response = await fetch(`${API_BASE}/mv.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(currentPath)}&${encodeURIComponent(newName)}`);
+  const response = await fetch(`${baseURL()}/mv.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(currentPath)}&${encodeURIComponent(newName)}`);
   if (!response.ok) throw new Error('Failed to move/rename item');
 }
 
@@ -173,7 +181,7 @@ export async function moveItem(rootPath, currentPath, newName) {
  */
 export async function deleteItems(rootPath, paths) {
   const params = [encodeURIComponent(rootPath), ...paths.map(p => encodeURIComponent(p))].join('&');
-  const response = await fetch(`${API_BASE}/rm.sh?${params}`);
+  const response = await fetch(`${baseURL()}/rm.sh?${params}`);
   if (!response.ok) throw new Error('Failed to delete items');
 }
 
@@ -185,7 +193,7 @@ export async function deleteItems(rootPath, paths) {
  * @returns {Promise<void>}
  */
 export async function copyFile(rootPath, sourcePath, destName) {
-  const response = await fetch(`${API_BASE}/cp.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(sourcePath)}&${encodeURIComponent(destName)}`);
+  const response = await fetch(`${baseURL()}/cp.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(sourcePath)}&${encodeURIComponent(destName)}`);
   if (!response.ok) throw new Error('Failed to copy file');
 }
 
@@ -194,7 +202,7 @@ export async function copyFile(rootPath, sourcePath, destName) {
  * @returns {Promise<Object>} Organized video list by category
  */
 export async function fetchVideoList() {
-  const response = await fetch(`${API_BASE}/videolist.sh`);
+  const response = await fetch(`${baseURL()}/videolist.sh`);
   if (!response.ok) throw new Error('Failed to fetch video list');
 
   const text = await response.text();
@@ -238,7 +246,7 @@ function parseVideoList(text) {
  * @returns {Promise<void>}
  */
 export async function triggerSync() {
-  const response = await fetch(`${API_BASE}/trigger_sync.sh`);
+  const response = await fetch(`${baseURL()}/trigger_sync.sh`);
   if (!response.ok) throw new Error('Failed to trigger sync');
 }
 
@@ -247,7 +255,7 @@ export async function triggerSync() {
  * @returns {Promise<Object>} Progress object with active, bytesTransferred, percentage, speed, eta
  */
 export async function fetchMusicSyncProgress() {
-  const response = await fetch(`${API_BASE}/music_sync_progress.sh`);
+  const response = await fetch(`${baseURL()}/music_sync_progress.sh`);
   if (!response.ok) throw new Error('Failed to fetch music sync progress');
   return response.json();
 }
@@ -257,7 +265,7 @@ export async function fetchMusicSyncProgress() {
  * @returns {Promise<Object>} Progress object with active, bytesTransferred, percentage, speed, eta, filesDone, filesTotal
  */
 export async function fetchCamSyncProgress() {
-  const response = await fetch(`${API_BASE}/cam_sync_progress.sh`);
+  const response = await fetch(`${baseURL()}/cam_sync_progress.sh`);
   if (!response.ok) throw new Error('Failed to fetch cam sync progress');
   return response.json();
 }
@@ -267,7 +275,7 @@ export async function fetchCamSyncProgress() {
  * @returns {Promise<void>}
  */
 export async function toggleDrives() {
-  const response = await fetch(`${API_BASE}/toggledrives.sh`);
+  const response = await fetch(`${baseURL()}/toggledrives.sh`);
   if (!response.ok) throw new Error('Failed to toggle drives');
 }
 
@@ -276,7 +284,7 @@ export async function toggleDrives() {
  * @returns {Promise<void>}
  */
 export async function reboot() {
-  const response = await fetch(`${API_BASE}/reboot.sh`);
+  const response = await fetch(`${baseURL()}/reboot.sh`);
   if (!response.ok) throw new Error('Failed to reboot');
 }
 
@@ -285,7 +293,7 @@ export async function reboot() {
  * @returns {Promise<boolean>} True if pairing initiated
  */
 export async function startBLEPairing() {
-  const response = await fetch(`${API_BASE}/pairBLEkey.sh`);
+  const response = await fetch(`${baseURL()}/pairBLEkey.sh`);
   return response.status === 202;
 }
 
@@ -294,7 +302,7 @@ export async function startBLEPairing() {
  * @returns {Promise<boolean>} True if paired
  */
 export async function checkBLEStatus() {
-  const response = await fetch(`${API_BASE}/checkBLEstatus.sh`);
+  const response = await fetch(`${baseURL()}/checkBLEstatus.sh`);
   const text = await response.text();
   return text.includes('<p>paired</p>');
 }
@@ -304,7 +312,7 @@ export async function checkBLEStatus() {
  * @returns {Promise<void>}
  */
 export async function generateDiagnostics() {
-  const response = await fetch(`${API_BASE}/diagnose.sh`);
+  const response = await fetch(`${baseURL()}/diagnose.sh`);
   // Wait for the response body to ensure the script completes
   await response.text();
   if (!response.ok) throw new Error('Failed to generate diagnostics');
@@ -400,7 +408,7 @@ export async function fetchLog(logFile, lastSize = 0) {
  * @returns {Promise<number>} Final speed in Mbps
  */
 export async function runSpeedTest(onProgress, signal) {
-  const response = await fetch(`${API_BASE}/randomdata.sh`, { signal });
+  const response = await fetch(`${baseURL()}/randomdata.sh`, { signal });
   if (!response.ok) throw new Error('Failed to start speed test');
 
   const reader = response.body.getReader();

@@ -1,3 +1,5 @@
+import './services/bootstrap.js';
+
 import { render } from 'preact';
 import { App } from './App';
 import './styles/index.css';
