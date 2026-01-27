@@ -22,6 +22,38 @@ export function baseURL() {
     return baseDomain() + path;
 }
 
+export function authUsername() {
+    return window.url.searchParams.get('username') || window.TESLAUSB_API_BASIC_USERNAME || null;
+}
+
+export function authPassword() {
+    return window.url.searchParams.get('password') || window.TESLAUSB_API_BASIC_PASSWORD || null;
+}
+
+export function shouldAddAuthHeader() {
+    return authUsername() !== null && authPassword() !== null;
+}
+
+
+/**
+ * Get and encode `Authorization` header value.
+ * @returns {string}
+ */
+export function getAuthHeader() {
+    let payload = btoa(`${authUsername()}:${authPassword()}`);
+    return `Basic ${payload}`;
+}
+
+export async function fetchClient(input, init = {}) {
+    if (shouldAddAuthHeader()) {
+        init.headers = init.headers || {};
+        init.headers['Authorization'] = getAuthHeader();
+    }
+    return await fetch(input, {
+        ...init,
+    })
+}
+
 /**
  * Fetch system status
  * @returns {Promise<Object>} Status object with cpu_temp, disk space, wifi, etc.
