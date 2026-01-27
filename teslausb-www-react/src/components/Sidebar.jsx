@@ -187,7 +187,7 @@ export function Sidebar({ status, computed, config, expanded, onToggle, onRefres
             <span className="info-value-with-action">
               {speedTestResult && <span className="speed-result">{speedTestResult} Mbps</span>}
               <button className="toggle-btn" onClick={handleSpeedTest} disabled={speedTestRunning}>
-                {speedTestRunning && <SpeedIcon style={{ width: 12, height: 12 }} className="spinning" />}
+                {speedTestRunning && <SpeedIcon style={{ width: 10, height: 10 }} className="spinning" />}
                 {speedTestRunning ? 'Testing...' : 'Run'}
               </button>
             </span>

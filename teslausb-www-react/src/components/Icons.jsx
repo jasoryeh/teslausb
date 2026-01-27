@@ -331,9 +331,9 @@ export function CameraIcon({ className }) {
   );
 }
 
-export function SpeedIcon({ className }) {
+export function SpeedIcon({ className, ...props }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
       <path d="M19.4 14.9C20.2 13.4 20.6 11.7 20.6 10c0-5-4-9-9-9s-9 4-9 9 4 9 9 9c1.7 0 3.4-.4 4.9-1.2" />
       <path d="M11.6 10l6.4 6.4" />
     </svg>
