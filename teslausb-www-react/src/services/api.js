@@ -328,7 +328,7 @@ export async function generateDiagnostics() {
  * @returns {Promise<string>} Diagnostics content
  */
 export async function fetchDiagnostics() {
-  const response = await fetch('/diagnostics.txt');
+  const response = await fetch(`${baseDomain()}/diagnostics.txt`);
   if (!response.ok) throw new Error('Failed to fetch diagnostics');
   return response.text();
 }
@@ -449,7 +449,7 @@ export async function runSpeedTest(onProgress, signal) {
  * @returns {string} Video URL
  */
 export function getVideoUrl(category, sequence, filename) {
-  return `/TeslaCam/${category}/${sequence}/${filename}`;
+  return `${baseDomain()}/TeslaCam/${category}/${sequence}/${filename}`;
 }
 
 /**
@@ -458,7 +458,7 @@ export function getVideoUrl(category, sequence, filename) {
  * @returns {string} Event JSON URL
  */
 export function getEventJsonUrl(sequence) {
-  return `/TeslaCam/SentryClips/${sequence}/event.json`;
+  return `${baseDomain()}/TeslaCam/SentryClips/${sequence}/event.json`;
 }
 
 /**
