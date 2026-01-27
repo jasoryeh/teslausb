@@ -1,10 +1,13 @@
 name: pi-gen-build
 
 on:
-  push:
-    branches: [ "main-dev" ]
-  pull_request:
-    branches: [ "main-dev" ]
+  workflow_dispatch:
+  release:
+    type: [created, published, released]
+#  push:
+#    branches: [ "main-dev" ]
+#  pull_request:
+#    branches: [ "main-dev" ]
 
 jobs:
   build:
