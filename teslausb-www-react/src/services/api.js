@@ -342,7 +342,7 @@ export async function fetchDiagnostics() {
 export async function fetchLog(logFile, lastSize = 0) {
   // Use HEAD request first to check file size and avoid 416 errors
   if (lastSize > 0) {
-    const headResponse = await fetch(`${baseURL()}/${logFile}`, { method: 'HEAD' });
+    const headResponse = await fetch(`${baseDomain()}/${logFile}`, { method: 'HEAD' });
     if (headResponse.ok) {
       const contentLength = parseInt(headResponse.headers.get('Content-Length') || '0', 10);
       if (contentLength <= lastSize) {
@@ -362,7 +362,7 @@ export async function fetchLog(logFile, lastSize = 0) {
     headers['Range'] = `bytes=${lastSize}-`;
   }
 
-  const response = await fetch(`${baseURL()}/${logFile}`, { headers });
+  const response = await fetch(`${baseDomain()}/${logFile}`, { headers });
 
   if (response.status === 416) {
     // Range not satisfiable - shouldn't happen now but handle just in case
