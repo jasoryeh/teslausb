@@ -4,6 +4,7 @@
  */
 
 const DEFAULT_API_PATH = '/cgi-bin';
+const DEFAULT_API_BASE = null;
 
 /**
  * Get the base domain for API requests, checks for alternative endpoints on the window for debugging.
