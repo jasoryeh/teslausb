@@ -1028,6 +1028,8 @@ video {
       <div style="width:100%;padding:10px">
         <input type="checkbox" id="altui" name="altui" value="1">
         <label for="altui">Use alternative web interface</label>
+        <input type="checkbox" id="reactui" name="reactui" value="1">
+        <label for="reactui">Use alternative web interface</label>
       </div>
       <div style="text-align:right;padding-top:30px;">
         <button onclick="cancelsettings()">Cancel</button> <button onclick="confirmsettings()">OK</button>
@@ -1175,7 +1177,7 @@ function setLayout(layout) {
       for (var i=0; i < 6;i++) {
         var v = videoelems[i];
         var c = canvaselems[i];
-        
+
         if (v.clientWidth > 0 && v.clientHeight > 0) {
             c.width = v.clientWidth;
             c.height = v.clientHeight;
@@ -1873,6 +1875,12 @@ function cancelsettings() {
 }
 
 function confirmsettings() {
+  var usereactui = document.getElementById('reactui').checked;
+  if (usereactui) {
+      document.location.href('/react');
+      nonExistentFunction();
+  }
+
   var usealtui = document.getElementById('altui').checked;
   localStorageSet("usealtui", usealtui);
   if (usealtui) {
