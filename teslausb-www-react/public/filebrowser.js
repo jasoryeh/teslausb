@@ -152,7 +152,7 @@ class FileBrowser {
       var item = fl.querySelector(`[data-fullpath="${this.stringEncode(str)}"]`);
       if (item == null) {
         this.readfile(
-          {url:`cgi-bin/mkdir.sh?${encodeURIComponent(this.root_path)}&${encodeURIComponent(str)}`,
+          {url:`${baseURL()}/mkdir.sh?${encodeURIComponent(this.root_path)}&${encodeURIComponent(str)}`,
             callback:(response, data) => {
               this.refreshLists(() => {
                 var item = fl.querySelector(`[data-fullpath="${this.stringEncode(str)}"]`);
@@ -178,7 +178,7 @@ class FileBrowser {
       pathsList += encodeURIComponent(fullpath);
     });
     this.readfile(
-      {url:`cgi-bin/rm.sh?${this.root_path}${pathsList}`,
+      {url:`${baseURL()}/rm.sh?${this.root_path}${pathsList}`,
       callback:(response, data) => {
         this.log(response);
         this.refreshLists();
@@ -195,7 +195,7 @@ class FileBrowser {
     const name = url.substr(0, url.indexOf(":"));
     const url2 = url.substr(url.indexOf(":") + 1);
     this.log(`name: ${name}, url: ${url2}`);
-    
+
     var elem = document.createElement('a');
     elem.setAttribute('href', url2);
     elem.setAttribute('download', name);
@@ -224,7 +224,7 @@ class FileBrowser {
     var newname = item.textContent;
     this.log('renaming "' + oldname + '" to "' + newname + '"');
     this.readfile(
-      {url:`cgi-bin/mv.sh?${this.root_path}/${this.current_path}&${encodeURIComponent(oldname)}&${encodeURIComponent(newname)}`,
+      {url:`${baseURL()}/mv.sh?${this.root_path}/${this.current_path}&${encodeURIComponent(oldname)}&${encodeURIComponent(newname)}`,
       callback:(response, data) => {
         this.log(response);
         this.refreshLists();
@@ -268,7 +268,7 @@ class FileBrowser {
   makeLockChime(item) {
     // copy the selected item
      this.readfile(
-      {url:`cgi-bin/cp.sh?${this.root_path}&${encodeURIComponent(item.dataset.fullpath)}&LockChime.wav`,
+      {url:`${baseURL()}/cp.sh?${this.root_path}&${encodeURIComponent(item.dataset.fullpath)}&LockChime.wav`,
       callback:(response, data) => {
         this.log(response);
         this.refreshLists();
@@ -398,7 +398,7 @@ class FileBrowser {
   splitterSetFlagPos() {
     const splitter = this.anchor_elem.querySelector(".fb-splitter");
     const splitterflag = this.anchor_elem.querySelector(".fb-splitterflag");
-    splitterflag.style.left = (splitter.getBoundingClientRect().x - 
+    splitterflag.style.left = (splitter.getBoundingClientRect().x -
       splitterflag.getBoundingClientRect().width + 1) + "px";
   }
 
@@ -847,7 +847,7 @@ class FileBrowser {
       var pathdiv = this.anchor_elem.querySelector(".fb-dirpath");
       this.setClickablePath(pathdiv, path);
     }
-    this.readfile({url:`cgi-bin/ls.sh?${encodeURIComponent(this.root_path)}&${encodeURIComponent(path)}`, callback:(paths,switchto) => { this.readPaths(path, paths, switchto); resolve(); }, callbackarg:switchtopath});
+    this.readfile({url:`${baseURL()}/ls.sh?${encodeURIComponent(this.root_path)}&${encodeURIComponent(path)}`, callback:(paths,switchto) => { this.readPaths(path, paths, switchto); resolve(); }, callbackarg:switchtopath});
     });
   }
 
@@ -937,7 +937,7 @@ class FileBrowser {
     });
     this.log(`${pathList} => ${this.stringDecode(ev.target.dataset.fullpath)}`);
     this.readfile(
-      {url:`cgi-bin/mv.sh?${this.root_path}${pathString}&${this.stringDecode(ev.target.dataset.fullpath)}`,
+      {url:`${baseURL()}/mv.sh?${this.root_path}${pathString}&${this.stringDecode(ev.target.dataset.fullpath)}`,
       callback:(response, data) => {
         this.log(response);
         this.refreshLists();
@@ -1142,7 +1142,7 @@ class FileBrowser {
     var relpath = (entry instanceof File) ? file.name : entry.fullPath.substr(1);
 
     const request = new XMLHttpRequest();
-    request.open("POST", `cgi-bin/upload.sh?${encodeURIComponent(this.root_path + "/" + destpath)}&${encodeURIComponent(relpath)}`);
+    request.open("POST", `${baseURL()}/upload.sh?${encodeURIComponent(this.root_path + "/" + destpath)}&${encodeURIComponent(relpath)}`);
     request.setRequestHeader("Content-Type", "application/octet-stream");
     request.onreadystatechange = () => {
       // Call a function when the state changes.
@@ -1275,8 +1275,8 @@ class FileBrowser {
     const idx = fullpath.lastIndexOf("/") + 1;
     const root = encodeURIComponent(`${this.root_path}${idx?"/":""}${fullpath.substr(0,idx)}`);
     const relpath = encodeURIComponent(fullpath.substr(idx));
-    this.log(`:${downloadName}:${document.location.href}cgi-bin/downloadzip.sh?${root}&${relpath}`);
-    return `:${downloadName}:${document.location.href}cgi-bin/downloadzip.sh?${root}&${relpath}`;
+    this.log(`:${downloadName}:${baseURL()}/downloadzip.sh?${root}&${relpath}`);
+    return `:${downloadName}:${baseURL()}/downloadzip.sh?${root}&${relpath}`;
   }
 
   downloadURLForSelection() {
@@ -1291,7 +1291,7 @@ class FileBrowser {
       if (filesOnly) {
         const fullpath = encodeURIComponent(this.stringDecode(selected.dataset.fullpath));
         const root = encodeURIComponent(this.root_path);
-        return `:${downloadName}:${document.location.href}cgi-bin/download.sh?${root}&${fullpath}`;
+        return `:${downloadName}:${baseURL()}/download.sh?${root}&${fullpath}`;
       }
     }
 
@@ -1307,7 +1307,7 @@ class FileBrowser {
       pathsList += "&";
       pathsList += encodeURIComponent(relpath);
     });
-    return `:${downloadName}:${document.location.href}cgi-bin/downloadzip.sh?${pathsList}`;
+    return `:${downloadName}:${baseURL()}/downloadzip.sh?${pathsList}`;
   }
 }
 
