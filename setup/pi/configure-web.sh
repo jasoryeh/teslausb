@@ -64,6 +64,7 @@ then
 fi
 
 # install React UI at /react/ - alternative interface with real-time sync progress
+rm -rf /var/www/html/react
 mkdir -p /var/www/html/react
 # build the dist folder
 DIST_NPMBUILD_PREVWD=$PWD
@@ -71,7 +72,8 @@ cd $SOURCE_DIR/teslausb-www-react
 npm i && npm run build
 cd $DIST_NPMBUILD_PREVWD
 # copy results
-cp -r "$SOURCE_DIR/teslausb-www-react/dist/"* /var/www/html/react/
+ln -s $SOURCE_DIR/teslausb-www-react/dist /var/www/html/react
+chmod -R www-data:www-data /var/www/html/react
 
 cat > /sbin/mount.ctts << EOF
 #!/bin/bash -eu
