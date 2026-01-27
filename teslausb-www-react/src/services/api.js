@@ -12,6 +12,7 @@ const DEFAULT_API_PATH = '/cgi-bin';
 export function baseDomain() {
     return window.url.searchParams.get('endpoint') || window.TESLAUSB_API_BASE || DEFAULT_API_BASE || '';
 }
+window.baseDomain = baseDomain;
 
 /**
  * Get the base URL for API requests, checks for alternative endpoints on the window for debugging.
@@ -21,19 +22,22 @@ export function baseURL() {
     let path = window.url.searchParams.get('path') || window.TESLAUSB_API_PATH || DEFAULT_API_PATH;
     return baseDomain() + path;
 }
+window.baseURL = baseURL;
 
 export function authUsername() {
     return window.url.searchParams.get('username') || window.TESLAUSB_API_BASIC_USERNAME || null;
 }
+window.authUsername = authUsername;
 
 export function authPassword() {
     return window.url.searchParams.get('password') || window.TESLAUSB_API_BASIC_PASSWORD || null;
 }
+window.authPassword = authPassword;
 
 export function shouldAddAuthHeader() {
     return authUsername() !== null && authPassword() !== null;
 }
-
+window.shouldAddAuthHeader = shouldAddAuthHeader;
 
 /**
  * Get and encode `Authorization` header value.
@@ -43,7 +47,14 @@ export function getAuthHeader() {
     let payload = btoa(`${authUsername()}:${authPassword()}`);
     return `Basic ${payload}`;
 }
+window.getAuthHeader = getAuthHeader;
 
+/**
+ * Client to allow injecting data before a request.
+ * @param {RequestInfo | URL} input
+ * @param {RequestInit} init
+ * @returns {Promise<Response>}
+ */
 export async function fetchClient(input, init = {}) {
     if (shouldAddAuthHeader()) {
         init.headers = init.headers || {};
@@ -53,13 +64,14 @@ export async function fetchClient(input, init = {}) {
         ...init,
     })
 }
+window.fetchClient = fetchClient;
 
 /**
  * Fetch system status
  * @returns {Promise<Object>} Status object with cpu_temp, disk space, wifi, etc.
  */
 export async function fetchStatus() {
-  const response = await fetch(`${baseURL()}/status.sh`);
+  const response = await fetchClient(`${baseURL()}/status.sh`);
   if (!response.ok) throw new Error('Failed to fetch status');
   return response.json();
 }
@@ -69,7 +81,7 @@ export async function fetchStatus() {
  * @returns {Promise<Object>} Config object with has_cam, has_music, etc.
  */
 export async function fetchConfig() {
-  const response = await fetch(`${baseURL()}/config.sh`);
+  const response = await fetchClient(`${baseURL()}/config.sh`);
   if (!response.ok) throw new Error('Failed to fetch config');
   return response.json();
 }
@@ -79,7 +91,7 @@ export async function fetchConfig() {
  * @returns {Promise<Object>} Storage object with cam, music, lightshow, boombox, total
  */
 export async function fetchStorage() {
-  const response = await fetch(`${baseURL()}/storage.sh`);
+  const response = await fetchClient(`${baseURL()}/storage.sh`);
   if (!response.ok) throw new Error('Failed to fetch storage');
   return response.json();
 }
@@ -95,7 +107,7 @@ export async function listDirectory(rootPath, dirPath = '') {
   params.append('root', rootPath);
   if (dirPath) params.append('path', dirPath);
 
-  const response = await fetch(`${baseURL()}/ls.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(dirPath)}`);
+  const response = await fetchClient(`${baseURL()}/ls.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(dirPath)}`);
   if (!response.ok) throw new Error('Failed to list directory');
 
   const text = await response.text();
@@ -198,7 +210,7 @@ export function getZipDownloadUrl(rootPath, paths) {
  * @returns {Promise<void>}
  */
 export async function createDirectory(rootPath, dirName) {
-  const response = await fetch(`${baseURL()}/mkdir.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(dirName)}`);
+  const response = await fetchClient(`${baseURL()}/mkdir.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(dirName)}`);
   if (!response.ok) throw new Error('Failed to create directory');
 }
 
@@ -210,7 +222,7 @@ export async function createDirectory(rootPath, dirName) {
  * @returns {Promise<void>}
  */
 export async function moveItem(rootPath, currentPath, newName) {
-  const response = await fetch(`${baseURL()}/mv.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(currentPath)}&${encodeURIComponent(newName)}`);
+  const response = await fetchClient(`${baseURL()}/mv.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(currentPath)}&${encodeURIComponent(newName)}`);
   if (!response.ok) throw new Error('Failed to move/rename item');
 }
 
@@ -222,7 +234,7 @@ export async function moveItem(rootPath, currentPath, newName) {
  */
 export async function deleteItems(rootPath, paths) {
   const params = [encodeURIComponent(rootPath), ...paths.map(p => encodeURIComponent(p))].join('&');
-  const response = await fetch(`${baseURL()}/rm.sh?${params}`);
+  const response = await fetchClient(`${baseURL()}/rm.sh?${params}`);
   if (!response.ok) throw new Error('Failed to delete items');
 }
 
@@ -234,7 +246,7 @@ export async function deleteItems(rootPath, paths) {
  * @returns {Promise<void>}
  */
 export async function copyFile(rootPath, sourcePath, destName) {
-  const response = await fetch(`${baseURL()}/cp.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(sourcePath)}&${encodeURIComponent(destName)}`);
+  const response = await fetchClient(`${baseURL()}/cp.sh?${encodeURIComponent(rootPath)}&${encodeURIComponent(sourcePath)}&${encodeURIComponent(destName)}`);
   if (!response.ok) throw new Error('Failed to copy file');
 }
 
@@ -243,7 +255,7 @@ export async function copyFile(rootPath, sourcePath, destName) {
  * @returns {Promise<Object>} Organized video list by category
  */
 export async function fetchVideoList() {
-  const response = await fetch(`${baseURL()}/videolist.sh`);
+  const response = await fetchClient(`${baseURL()}/videolist.sh`);
   if (!response.ok) throw new Error('Failed to fetch video list');
 
   const text = await response.text();
@@ -287,7 +299,7 @@ function parseVideoList(text) {
  * @returns {Promise<void>}
  */
 export async function triggerSync() {
-  const response = await fetch(`${baseURL()}/trigger_sync.sh`);
+  const response = await fetchClient(`${baseURL()}/trigger_sync.sh`);
   if (!response.ok) throw new Error('Failed to trigger sync');
 }
 
@@ -296,7 +308,7 @@ export async function triggerSync() {
  * @returns {Promise<Object>} Progress object with active, bytesTransferred, percentage, speed, eta
  */
 export async function fetchMusicSyncProgress() {
-  const response = await fetch(`${baseURL()}/music_sync_progress.sh`);
+  const response = await fetchClient(`${baseURL()}/music_sync_progress.sh`);
   if (!response.ok) throw new Error('Failed to fetch music sync progress');
   return response.json();
 }
@@ -306,7 +318,7 @@ export async function fetchMusicSyncProgress() {
  * @returns {Promise<Object>} Progress object with active, bytesTransferred, percentage, speed, eta, filesDone, filesTotal
  */
 export async function fetchCamSyncProgress() {
-  const response = await fetch(`${baseURL()}/cam_sync_progress.sh`);
+  const response = await fetchClient(`${baseURL()}/cam_sync_progress.sh`);
   if (!response.ok) throw new Error('Failed to fetch cam sync progress');
   return response.json();
 }
@@ -316,7 +328,7 @@ export async function fetchCamSyncProgress() {
  * @returns {Promise<void>}
  */
 export async function toggleDrives() {
-  const response = await fetch(`${baseURL()}/toggledrives.sh`);
+  const response = await fetchClient(`${baseURL()}/toggledrives.sh`);
   if (!response.ok) throw new Error('Failed to toggle drives');
 }
 
@@ -325,7 +337,7 @@ export async function toggleDrives() {
  * @returns {Promise<void>}
  */
 export async function reboot() {
-  const response = await fetch(`${baseURL()}/reboot.sh`);
+  const response = await fetchClient(`${baseURL()}/reboot.sh`);
   if (!response.ok) throw new Error('Failed to reboot');
 }
 
@@ -334,7 +346,7 @@ export async function reboot() {
  * @returns {Promise<boolean>} True if pairing initiated
  */
 export async function startBLEPairing() {
-  const response = await fetch(`${baseURL()}/pairBLEkey.sh`);
+  const response = await fetchClient(`${baseURL()}/pairBLEkey.sh`);
   return response.status === 202;
 }
 
@@ -343,7 +355,7 @@ export async function startBLEPairing() {
  * @returns {Promise<boolean>} True if paired
  */
 export async function checkBLEStatus() {
-  const response = await fetch(`${baseURL()}/checkBLEstatus.sh`);
+  const response = await fetchClient(`${baseURL()}/checkBLEstatus.sh`);
   const text = await response.text();
   return text.includes('<p>paired</p>');
 }
@@ -353,7 +365,7 @@ export async function checkBLEStatus() {
  * @returns {Promise<void>}
  */
 export async function generateDiagnostics() {
-  const response = await fetch(`${baseURL()}/diagnose.sh`);
+  const response = await fetchClient(`${baseURL()}/diagnose.sh`);
   // Wait for the response body to ensure the script completes
   await response.text();
   if (!response.ok) throw new Error('Failed to generate diagnostics');
@@ -364,7 +376,7 @@ export async function generateDiagnostics() {
  * @returns {Promise<string>} Diagnostics content
  */
 export async function fetchDiagnostics() {
-  const response = await fetch(`${baseDomain()}/diagnostics.txt`);
+  const response = await fetchClient(`${baseDomain()}/diagnostics.txt`);
   if (!response.ok) throw new Error('Failed to fetch diagnostics');
   return response.text();
 }
@@ -378,7 +390,7 @@ export async function fetchDiagnostics() {
 export async function fetchLog(logFile, lastSize = 0) {
   // Use HEAD request first to check file size and avoid 416 errors
   if (lastSize > 0) {
-    const headResponse = await fetch(`${baseDomain()}/${logFile}`, { method: 'HEAD' });
+    const headResponse = await fetchClient(`${baseDomain()}/${logFile}`, { method: 'HEAD' });
     if (headResponse.ok) {
       const contentLength = parseInt(headResponse.headers.get('Content-Length') || '0', 10);
       if (contentLength <= lastSize) {
@@ -398,7 +410,7 @@ export async function fetchLog(logFile, lastSize = 0) {
     headers['Range'] = `bytes=${lastSize}-`;
   }
 
-  const response = await fetch(`${baseDomain()}/${logFile}`, { headers });
+  const response = await fetchClient(`${baseDomain()}/${logFile}`, { headers });
 
   if (response.status === 416) {
     // Range not satisfiable - shouldn't happen now but handle just in case
@@ -449,7 +461,7 @@ export async function fetchLog(logFile, lastSize = 0) {
  * @returns {Promise<number>} Final speed in Mbps
  */
 export async function runSpeedTest(onProgress, signal) {
-  const response = await fetch(`${baseURL()}/randomdata.sh`, { signal });
+  const response = await fetchClient(`${baseURL()}/randomdata.sh`, { signal });
   if (!response.ok) throw new Error('Failed to start speed test');
 
   const reader = response.body.getReader();
@@ -504,7 +516,7 @@ export function getEventJsonUrl(sequence) {
  */
 export async function fetchEventData(sequence) {
   try {
-    const response = await fetch(getEventJsonUrl(sequence));
+    const response = await fetchClient(getEventJsonUrl(sequence));
     if (!response.ok) return null;
     return response.json();
   } catch {
