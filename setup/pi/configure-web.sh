@@ -73,7 +73,7 @@ npm i && npm run build
 cd $DIST_NPMBUILD_PREVWD
 # copy results
 ln -s $SOURCE_DIR/teslausb-www-react/dist /var/www/html/react
-chmod -R www-data:www-data /var/www/html/react
+chmod -R 777 /var/www/html/react
 
 cat > /sbin/mount.ctts << EOF
 #!/bin/bash -eu
