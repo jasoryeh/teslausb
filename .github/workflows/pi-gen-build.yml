@@ -45,7 +45,7 @@ jobs:
           echo "imagefile=$IMAGE_FILE" >> $GITHUB_OUTPUT
           NOW=$(date +"%Y-%m-%d-%H%M")
           IMAGE=TeslaUSB-$NOW-${GITHUB_REF##*/}
-          echo "name=$IMAGE"  >> $GITHUB_OUTPUT
+          echo "name=$IMAGE.zip"  >> $GITHUB_OUTPUT
 
       # The image now exists in deploy/.
       # Make the artifact available from the action.
