@@ -26,6 +26,8 @@ server {
     }
 
     location /cgi-bin/ {
+        auth_basic off;
+        auth_basic_user_file /etc/nginx/.htpasswd;
         add_header 'Access-Control-Allow-Origin' '*' always;
         if ($request_method = 'OPTIONS') {
             add_header 'Access-Control-Allow-Origin' '*';
@@ -43,6 +45,8 @@ server {
     }
 
     location /TeslaCam/ {
+        auth_basic off;
+        auth_basic_user_file /etc/nginx/.htpasswd;
         add_header 'Access-Control-Allow-Origin' '*' always;
         if ($request_method = 'OPTIONS') {
             add_header 'Access-Control-Allow-Origin' '*';

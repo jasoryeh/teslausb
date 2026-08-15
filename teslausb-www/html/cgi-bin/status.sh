@@ -58,6 +58,10 @@ elif [ -f /sys/class/hwmon/hwmon0/temp1_input ]; then
   # Radxa Rock Pi and similar devices
   cpu_temp=$(cat /sys/class/hwmon/hwmon0/temp1_input 2>/dev/null)
 fi
+fan_speed=$(cat /sys/devices/platform/cooling_fan/hwmon/*/fan1_input 2>/dev/null || echo "N/A")
+
+external_5v=$(sudo -n vcgencmd pmic_read_adc EXT5V_V 2>/dev/null) && external_5v=${external_5v##*=} && external_5v=${external_5v%V} || external_5v="N/A"
+rtc_batt_v=$(sudo -n vcgencmd pmic_read_adc BATT_V 2>/dev/null) && rtc_batt_v=${rtc_batt_v##*=} && rtc_batt_v=${rtc_batt_v%V} || rtc_batt_v="N/A"
 
 cat << EOF
 HTTP/1.0 200 OK
@@ -66,6 +70,10 @@ Content-type: application/json
 {
    "device_model": "$device_model",
    "cpu_temp": "$cpu_temp",
+   "fan_speed": "$fan_speed",
+   "external_5v": "$external_5v",
+   "throttled": "$(sudo -n vcgencmd get_throttled 2>/dev/null | sed -n 's/^throttled=//p' || echo "N/A")",
+   "rtc_batt_v": "$rtc_batt_v",
    "num_snapshots": "$numsnapshots",
    "snapshot_oldest": "$oldestsnapshot",
    "snapshot_newest": "$newestsnapshot",
